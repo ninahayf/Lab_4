@@ -1,0 +1,172 @@
+---
+title: "lab-04"
+format: html
+---
+
+```{r load-data}
+library(ggplot2)
+library(ggpubr)
+```
+
+## Histogram
+```{r}
+set.seed(2000)
+heightdata <- data.frame(
+  sex = factor(rep(c("Female", "Male"), each=300)),
+  height = c(rnorm(300, 65), rnorm(300, 69))
+)
+```
+```{r}
+gghistogram(heightdata, x = "height",
+            add = "mean", rug = TRUE,
+            color = "sex", fill = "sex", bins= 15)
+```
+
+## Density Plot
+```{r}
+ggdensity(heightdata, x = "height",
+          add = "mean", rug = TRUE,
+          color = "sex", fill = "sex")
+```
+
+## Box Plot 
+```{r}
+data(ais, package = "alr4")
+ais <- ais[1:50,]
+head(ais,10)
+```
+```{r}
+pbox <- ggboxplot(ais, x = "Sport", y = "Wt",
+                  color = "Sport",
+                  add = "jitter", shape = "Sport")
+pbox
+```
+```{r}
+mycomparisons <- list(c("b_ball", "netball"), c("netball", "row"), c("b_ball", "row"))
+pbox + stat_compare_means(comparisons = mycomparisons)+
+  stat_compare_means(label.y = 50)
+```
+
+## Violin Plot 
+```{r}
+ggviolin(ais, x = "Sport", y = "Wt", fill = "Sport",
+         add = "boxplot", add.params = list(fill = "white"))+
+  stat_compare_means(comparisons = mycomparisons)+
+  stat_compare_means(label.y = 50)
+```
+
+## Bar Plot 
+```{r}
+data(mtcars)
+cars <- mtcars
+cars$gear <- factor(cars$gear)
+cars$name <- rownames(cars)
+head(cars[,c("name", "wt", "hp", "gear")])
+```
+```{r}
+ggbarplot(cars, x = "name", y = "hp",
+          fill = "gear",
+          color = "white",
+          palette = "jco",
+          sort.val = "desc",
+          sort.by.groups = FALSE,
+          x.text.angle = 60,
+          ylab = "Horse Power",
+          xlab = FALSE,
+          legend.title="Gear"
+          )
+```
+```{r}
+cars$hp_z <- (cars$hp-mean(cars$hp))/sd(cars$hp)
+cars$hp_grp <- factor(ifelse(cars$hp_z<0, "low", "high"), levels=c("low", "high"))
+head(cars[,c("name", "wt", "hp", "hp_grp", "gear")])
+```
+```{r}
+ggbarplot(cars, x="name", y="hp_z",
+          fill = "hp_grp",
+          color = "white",
+          palette = "jco",
+          sort.val = "asc",
+          sort.by.groups = FALSE,
+          x.text.angle=60,
+          ylab = "Horsepower z-scores",
+          xlab = FALSE, 
+          legend.title="Horsepower Group")
+```
+```{r}
+rotate=TRUE
+ggbarplot(cars, x="name", y="hp_z",
+          fill = "hp_grp",
+          color = "white",
+          palette = "jco",
+          sort.val = "asc",
+          sort.by.groups = FALSE,
+          x.text.angle=90,
+          ylab = "Horsepower z-scores",
+          xlab = FALSE, 
+          legend.title="Horsepower Group",
+          rotate=TRUE,
+          ggtheme = theme_minimal())
+```
+
+## Lollipop Chart
+```{r}
+ggdotchart(cars, x="name", y="hp",
+           color="gear",
+           palette = "jco",
+           sorting = "ascending",
+           add = "segments",
+           ggtheme = theme_pubr(),
+           legend.title = "Gear",
+           ylab="Horsepower",
+           xlab=FALSE)
+```
+```{r}
+ggdotchart(cars, x="name", y="hp",
+           color="gear",
+           palette = "jco",
+           sorting = "descending",
+           add = "segments",
+           rotate=TRUE,
+           group="gear",
+           dot.size=6,
+           label=round(cars$mpg),
+           font.label = list(color="white", size=9, vjust=0.5),
+           ggtheme = theme_pubr(),
+           legend.title = "Gear",
+           ylab=FALSE,
+           xlab = "Horsepower")
+```
+
+## Cleveland Dot Plot
+```{r}
+ggdotchart(cars, x = "name", y = "hp",
+           color = "gear", 
+           palette = "jco",
+           sorting = "descending",                 
+           rotate = TRUE,                          
+           dot.size = 2,
+           ggtheme = theme_pubr(),
+           legend.title = "Gear")+
+  theme_cleveland()                                
+```
+```{r}
+y.text.col=TRUE
+ggdotchart(cars, x = "name", y = "hp",
+           color = "gear", 
+           palette = "jco",
+           sorting = "descending",                 
+           rotate = TRUE,                          
+           dot.size = 2,                           
+           ggtheme = theme_pubr(),
+           y.text.col=TRUE,
+           legend.title = "Gear")+
+  theme_cleveland()      
+```
+# Visualization of Geographical Maps
+## Load Data 
+```{r}
+library(maps)
+library(tmap)
+```
+
