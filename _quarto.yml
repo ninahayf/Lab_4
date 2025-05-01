@@ -1,0 +1,7 @@
+project: 
+  title: "lab 4 - stats in R"
+  output-dir: docs
+  type: website
+format: 
+  html: 
+    self-contained: true
